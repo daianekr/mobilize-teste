@@ -1,4 +1,4 @@
 env/
-
+.streamlit/
 
 mobilize-data.json
