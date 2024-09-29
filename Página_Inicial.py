@@ -41,6 +41,10 @@ df = conn.read(
 colunas = ['Nome','Status','OBS','parceria_ifood','RM','unidade_sesi','CPF', 'email_sesi','phone','email_ifood','Semana 0\n05 a 09/08','1ª semana\n12 a 16/08','2ª semana\n19 a 23/08','3ª semana\n26 a 30/08','4ª semana\n02 a 06/09','5ª semana\n09 a 13/09','6ª semana\n16 a 20/09','já foi a alguma aula?','Foi 1x', 'Foi 2x', 'Foi 3x', 'Foi 4x',
        'Foi 5x','Foi 6x','Já frenquentou alguma aula presencial? Se sim, qual?']
 
+df['RM'] = df['RM'].astype(str)
+df['CPF'] = df['CPF'].astype(str)
+df['phone'] = df['phone'].astype(str)
+
 df_1 = df[colunas]
 
 df_1 = df_1.rename(columns={'Nome':'Nome', 'Status':'Status', 'OBS':'Observação', 'parceria_ifood':'Parceria Ifood',
@@ -382,7 +386,7 @@ parceria_counts.columns = ['Parceria', 'Contagem']
 with st.expander("Clique para ver os dados brutos"):
     display_overview(filtered)
 
-    
+
 fig1 = px.bar(parceria_counts, 
               x='Parceria', 
               y='Contagem', 
