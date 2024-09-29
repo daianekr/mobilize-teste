@@ -15,9 +15,7 @@ st.set_page_config(
     layout="wide",
     initial_sidebar_state="expanded",
     menu_items={
-        'Get Help': 'https://www.extremelycoolapp.com/help',
-        'Report a bug': "https://www.extremelycoolapp.com/bug",
-        'About': "# This is a header. This is an *extremely* cool app!"
+        'About': "# Relatório de Presenças no Programa *Meu Diploma*"
     }
 )
 
@@ -298,7 +296,7 @@ col13, col14, col15, col16, col17, col18, col19 = st.columns(7)
 with col13:
     st.markdown(f"""
         <div style="text-align: center;">
-            <span style="font-size: 14px;"> foi em alguma aula </span><br>
+            <span style="font-size: 14px;"> Foi a Aula </span><br>
             <span style="font-size: 36px; font-weight: bold;">{total_f}</span>
         </div>
         """, unsafe_allow_html=True)
