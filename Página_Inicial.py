@@ -9,40 +9,43 @@ from pandas.api.types import is_datetime64_any_dtype, is_numeric_dtype
 PATH_to_KEY = "mobilize-data.json"
 URL_to_SPREADSHEET = "https://docs.google.com/spreadsheets/d/1sgUe83VbTZPhH5dtBtuGJpk6Pa1tqhUE4QCtOYvZ6ik/edit?gid=280735631#gid=280735631"
 
+st.set_page_config(
+    page_title="Mobilize<>Ifood",
+    page_icon="📑",
+    layout="wide",
+    initial_sidebar_state="expanded",
+    menu_items={
+        'Get Help': 'https://www.extremelycoolapp.com/help',
+        'Report a bug': "https://www.extremelycoolapp.com/bug",
+        'About': "# This is a header. This is an *extremely* cool app!"
+    }
+)
+
 scope = ['https://spreadsheets.google.com/feeds','https://www.googleapis.com/auth/drive']
 creds = ServiceAccountCredentials.from_json_keyfile_name("mobilize-data.json", scope)
 client = gspread.authorize(creds)
-
-
-# planilha = client.open("Consolidado V1 - SESI > iFood")
-# data = planilha.worksheet("acompanhamento geral_atual.")
-
-# Abrir planilha e selecionar aba
 sheet = client.open('Consolidado V1 - SESI > iFood').worksheet('acompanhamento geral_atual.')
-
-# Extrair dados e criar DataFrame
 data = sheet.get_all_values()
 headers = data[0]
 data = data[1:]
 
 df = pd.DataFrame(data, columns=headers)
 
-colunas = ['Nome','Status','OBS','parceria_ifood','full_name','RM','unidade_sesi','CPF', 'email_sesi','phone','email_ifood','Semana 0\n05 a 09/08','1ª semana\n12 a 16/08','2ª semana\n19 a 23/08','3ª semana\n26 a 30/08','4ª semana\n02 a 06/09','5ª semana\n09 a 13/09','6ª semana\n16 a 20/09','já foi a alguma aula?','Foi 1x', 'Foi 2x', 'Foi 3x', 'Foi 4x',
-       'Foi 5x','Já frenquentou alguma aula presencial? Se sim, qual?']
+colunas = ['Nome','Status','OBS','parceria_ifood','RM','unidade_sesi','CPF', 'email_sesi','phone','email_ifood','Semana 0\n05 a 09/08','1ª semana\n12 a 16/08','2ª semana\n19 a 23/08','3ª semana\n26 a 30/08','4ª semana\n02 a 06/09','5ª semana\n09 a 13/09','6ª semana\n16 a 20/09','já foi a alguma aula?','Foi 1x', 'Foi 2x', 'Foi 3x', 'Foi 4x',
+       'Foi 5x','Foi 6x','Já frenquentou alguma aula presencial? Se sim, qual?']
 
 df_1 = df[colunas]
 
 df_1 = df_1.rename(columns={'Nome':'Nome', 'Status':'Status', 'OBS':'Observação', 'parceria_ifood':'Parceira Ifood',
-       'full_name':'Nome Completo', 'RM':'Nº Matrícula', 'unidade_sesi':'Unidade SESI',
+       'RM':'Nº Matrícula', 'unidade_sesi':'Unidade SESI',
        'email_sesi': 'E-mail SESI', 'phone':'Telefone', 'email_ifood':'E-mail Ifood', 'Semana 0\n05 a 09/08':'Semana 0',
        '1ª semana\n12 a 16/08':'Semana 1', '2ª semana\n19 a 23/08': 'Semana 2',
        '3ª semana\n26 a 30/08': 'Semana 3', '4ª semana\n02 a 06/09': 'Semana 4',
        '5ª semana\n09 a 13/09': 'Semana 5', '6ª semana\n16 a 20/09': 'Semana 6',
        'já foi a alguma aula?': 'Já foi a alguma aula?', 'Foi 1x': 'Foi 1 Vez', 'Foi 2x': 'Foi 2 Vezes', 'Foi 3x': 'Foi 3 Vezes', 'Foi 4x': 'Foi 4 Vezes',
-       'Foi 5x': 'Foi 5 Vezes'})
+       'Foi 5x': 'Foi 5 Vezes','Foi 6x': 'Foi 6 Vezes'})
 
-st.title("Dados Mobilize <> Ifood")
-
+st.title("Programa Meu Diploma de Ensino Médio")
 
 def display_overview(df_1):
     st.dataframe(
@@ -120,19 +123,6 @@ def filter_dataframe(df: pd.DataFrame) -> pd.DataFrame:
 
     return df
 
-# def display_simbol_history(df_1):
-#     left_widget, right_widget, _ = st.columns([1,1,1.5])
-
-#     selected_column = left_widget.selectbox(
-#         "Unidade SESI", 
-#         df_1['Unidade SESI'].unique()
-#     )
-
-#     df_2 = df_1[selected_column]
-#     st.dataframe(df_2)
-    
-
-
 
 filtered = filter_dataframe(df_1)
 
@@ -187,6 +177,9 @@ total_4 = total_4.sum()
 
 total_5 = (filtered['Foi 5 Vezes'] == 'Sim')
 total_5 = total_5.sum()
+
+total_6 = (filtered['Foi 6 Vezes'] == 'Sim')
+total_6 = total_6.sum()
 
 st.markdown("### Visão Geral")
 
@@ -300,7 +293,7 @@ st.divider()
 
 st.markdown("### Frequência ")
 
-col13, col14, col15, col16, col17, col18 = st.columns(6)
+col13, col14, col15, col16, col17, col18, col19 = st.columns(7)
 
 with col13:
     st.markdown(f"""
@@ -348,6 +341,14 @@ with col18:
         <div style="text-align: center;">
             <span style="font-size: 14px;"> Foi 5 vezes </span><br>
             <span style="font-size: 36px; font-weight: bold;">{total_5}</span>
+        </div>
+        """, unsafe_allow_html=True)
+    
+with col19:
+    st.markdown(f"""
+        <div style="text-align: center;">
+            <span style="font-size: 14px;"> Foi 6 vezes </span><br>
+            <span style="font-size: 36px; font-weight: bold;">{total_6}</span>
         </div>
         """, unsafe_allow_html=True)
 
