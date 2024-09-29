@@ -1,9 +1,6 @@
-import gspread
 import pandas as pd
 import numpy as np
-import gspread_dataframe as gd
 import streamlit as st
-from oauth2client.service_account import ServiceAccountCredentials
 from pandas.api.types import is_datetime64_any_dtype, is_numeric_dtype
 from streamlit_gsheets import GSheetsConnection
 import seaborn as sns
