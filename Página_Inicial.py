@@ -5,9 +5,10 @@ import gspread_dataframe as gd
 import streamlit as st
 from oauth2client.service_account import ServiceAccountCredentials
 from pandas.api.types import is_datetime64_any_dtype, is_numeric_dtype
-
-PATH_to_KEY = "mobilize-data.json"
-URL_to_SPREADSHEET = "https://docs.google.com/spreadsheets/d/1sgUe83VbTZPhH5dtBtuGJpk6Pa1tqhUE4QCtOYvZ6ik/edit?gid=280735631#gid=280735631"
+from streamlit_gsheets import GSheetsConnection
+import seaborn as sns
+import matplotlib.pyplot as plt
+import plotly.express as px 
 
 st.set_page_config(
     page_title="Mobilize<>Ifood",
@@ -19,22 +20,30 @@ st.set_page_config(
     }
 )
 
-scope = ['https://spreadsheets.google.com/feeds','https://www.googleapis.com/auth/drive']
-creds = ServiceAccountCredentials.from_json_keyfile_name("mobilize-data.json", scope)
-client = gspread.authorize(creds)
-sheet = client.open('Consolidado V1 - SESI > iFood').worksheet('acompanhamento geral_atual.')
-data = sheet.get_all_values()
-headers = data[0]
-data = data[1:]
+conn = st.connection("gsheets", type=GSheetsConnection)
+df = conn.read(
+    worksheet="acompanhamento geral_atual.",
+    ttl="10m"
+)
 
-df = pd.DataFrame(data, columns=headers)
+# PATH_to_KEY = "mobilize-data.json"
+# URL_to_SPREADSHEET = "https://docs.google.com/spreadsheets/d/1sgUe83VbTZPhH5dtBtuGJpk6Pa1tqhUE4QCtOYvZ6ik/edit?gid=280735631#gid=280735631"
+
+
+# scope = ['https://spreadsheets.google.com/feeds','https://www.googleapis.com/auth/drive']
+# creds = ServiceAccountCredentials.from_json_keyfile_name("mobilize-data.json", scope)
+# client = gspread.authorize(creds)
+# sheet = client.open('Consolidado V1 - SESI > iFood').worksheet('acompanhamento geral_atual.')
+# data = sheet.get_all_values()
+# headers = data[0]
+# data = data[1:]
 
 colunas = ['Nome','Status','OBS','parceria_ifood','RM','unidade_sesi','CPF', 'email_sesi','phone','email_ifood','Semana 0\n05 a 09/08','1ª semana\n12 a 16/08','2ª semana\n19 a 23/08','3ª semana\n26 a 30/08','4ª semana\n02 a 06/09','5ª semana\n09 a 13/09','6ª semana\n16 a 20/09','já foi a alguma aula?','Foi 1x', 'Foi 2x', 'Foi 3x', 'Foi 4x',
        'Foi 5x','Foi 6x','Já frenquentou alguma aula presencial? Se sim, qual?']
 
 df_1 = df[colunas]
 
-df_1 = df_1.rename(columns={'Nome':'Nome', 'Status':'Status', 'OBS':'Observação', 'parceria_ifood':'Parceira Ifood',
+df_1 = df_1.rename(columns={'Nome':'Nome', 'Status':'Status', 'OBS':'Observação', 'parceria_ifood':'Parceria Ifood',
        'RM':'Nº Matrícula', 'unidade_sesi':'Unidade SESI',
        'email_sesi': 'E-mail SESI', 'phone':'Telefone', 'email_ifood':'E-mail Ifood', 'Semana 0\n05 a 09/08':'Semana 0',
        '1ª semana\n12 a 16/08':'Semana 1', '2ª semana\n19 a 23/08': 'Semana 2',
@@ -44,6 +53,9 @@ df_1 = df_1.rename(columns={'Nome':'Nome', 'Status':'Status', 'OBS':'Observaçã
        'Foi 5x': 'Foi 5 Vezes','Foi 6x': 'Foi 6 Vezes'})
 
 st.title("Programa Meu Diploma de Ensino Médio")
+
+st.text("")
+st.text("")
 
 def display_overview(df_1):
     st.dataframe(
@@ -131,13 +143,13 @@ total = filtered.shape[0]
 total_mat = (filtered['Status'] == 'Matriculado')
 total_mat = total_mat.sum()
 
-total_ent = (filtered['Parceira Ifood'] == 'Sou entregador (a) iFood')
+total_ent = (filtered['Parceria Ifood'] == 'Sou entregador (a) iFood')
 total_ent = total_ent.sum()
 
-total_don = (filtered['Parceira Ifood'] == 'Sou dono (a) de uma loja')
+total_don = (filtered['Parceria Ifood'] == 'Sou dono (a) de uma loja')
 total_don = total_don.sum()
 
-total_fun = (filtered['Parceira Ifood'] == 'Sou Funcionário (a) de uma loja')
+total_fun = (filtered['Parceria Ifood'] == 'Sou Funcionário (a) de uma loja')
 total_fun = total_fun.sum()
 
 total_p_0 = (filtered['Semana 0'] == 'PRESENTE')
@@ -180,6 +192,9 @@ total_6 = (filtered['Foi 6 Vezes'] == 'Sim')
 total_6 = total_6.sum()
 
 st.markdown("### Visão Geral")
+
+st.text("")
+st.text("")
 
 col1, col2, col3, col4, col5, col6 = st.columns(6)
 
@@ -236,6 +251,9 @@ st.divider()
 
 st.markdown("### Presença Semanal")
 
+st.text("")
+st.text("")
+
 col7, col8, col9, col10, col11, col12 = st.columns(6)
 
 with col7:
@@ -290,6 +308,9 @@ with col12:
 st.divider()
 
 st.markdown("### Frequência ")
+
+st.text("")
+st.text("")
 
 col13, col14, col15, col16, col17, col18, col19 = st.columns(7)
 
@@ -349,9 +370,48 @@ with col19:
             <span style="font-size: 36px; font-weight: bold;">{total_6}</span>
         </div>
         """, unsafe_allow_html=True)
+    
+st.divider()
+
+st.text("")
+st.text("")
+
+parceria_counts = filtered['Parceria Ifood'].value_counts().reset_index()
+parceria_counts.columns = ['Parceria', 'Contagem']
 
 with st.expander("Clique para ver os dados brutos"):
     display_overview(filtered)
+
+    
+fig1 = px.bar(parceria_counts, 
+              x='Parceria', 
+              y='Contagem', 
+              title='Total de Matriculados por Status Parceria com iFood', 
+              labels={'Parceria': '', 'Contagem': ''},
+              color='Parceria')
+
+fig1.update_traces(
+    texttemplate='%{y}',  
+    textposition='inside'  
+)
+
+fig1.update_layout(
+    xaxis_tickangle=0,  
+    height=600,  
+    xaxis=dict(
+        tickmode='auto',  
+        nticks=20 
+    ),
+    yaxis=dict(
+         
+        gridcolor="LightGrey"  
+    ),
+    bargap=0.3
+)
+st.plotly_chart(fig1)
+
+
+
 
 
 
