@@ -17,14 +17,17 @@ st.set_page_config(
     }
 )
 
+URL_to_SPREADSHEET = "https://docs.google.com/spreadsheets/d/1sgUe83VbTZPhH5dtBtuGJpk6Pa1tqhUE4QCtOYvZ6ik/edit?gid=280735631#gid=280735631"
+
 conn = st.connection("gsheets", type=GSheetsConnection)
 df = conn.read(
+    spreadsheet= URL_to_SPREADSHEET,
     worksheet="acompanhamento geral_atual.",
     ttl="10m"
 )
 
 # PATH_to_KEY = "mobilize-data.json"
-# URL_to_SPREADSHEET = "https://docs.google.com/spreadsheets/d/1sgUe83VbTZPhH5dtBtuGJpk6Pa1tqhUE4QCtOYvZ6ik/edit?gid=280735631#gid=280735631"
+
 
 
 # scope = ['https://spreadsheets.google.com/feeds','https://www.googleapis.com/auth/drive']
@@ -41,6 +44,8 @@ colunas = ['Nome','Status','OBS','parceria_ifood','RM','unidade_sesi','CPF', 'em
 df['RM'] = df['RM'].astype(str)
 df['CPF'] = df['CPF'].astype(str)
 df['phone'] = df['phone'].astype(str)
+df['email_sesi'] = df['email_sesi'].astype(str)
+df['email_ifood'] = df['email_ifood'].astype(str)
 
 df_1 = df[colunas]
 
