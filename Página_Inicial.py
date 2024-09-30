@@ -22,7 +22,7 @@ URL_to_SPREADSHEET = "https://docs.google.com/spreadsheets/d/1sgUe83VbTZPhH5dtBt
 conn = st.connection("gsheets", type=GSheetsConnection)
 df = conn.read(
     spreadsheet= URL_to_SPREADSHEET,
-    worksheet="acompanhamento geral_atual.",
+    worksheet="acompanhamento_geral_atual.",
     ttl="10m"
 )
 
