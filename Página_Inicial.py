@@ -17,11 +17,8 @@ st.set_page_config(
     }
 )
 
-URL_to_SPREADSHEET = "https://docs.google.com/spreadsheets/d/1sgUe83VbTZPhH5dtBtuGJpk6Pa1tqhUE4QCtOYvZ6ik/edit?gid=280735631#gid=280735631"
-
 conn = st.connection("gsheets", type=GSheetsConnection)
 df = conn.read(
-    spreadsheet= URL_to_SPREADSHEET,
     worksheet="acompanhamento_geral_atual.",
     ttl="10m"
 )
